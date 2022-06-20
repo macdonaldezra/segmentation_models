@@ -1,0 +1,42 @@
+Bootstrap: docker
+From: python:3.8
+Stage: poetry
+
+
+# Environment variables that will be set during runtime
+%environment
+    export POETRY_HOME="/opt/poetry"
+    export VIRTUAL_ENV=/opt/venv
+    export PATH="${VIRTUAL_ENV}/bin:${POETRY_HOME}/bin:$PATH"
+
+
+# Copy over files from host to container
+%files
+    poetry.lock /code/
+    pyproject.toml /code/
+    segmentation /code/
+
+
+# Install Poetry and Python dependencies
+%post
+    # Install Poetry
+    GET_POETRY="https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py"
+    export POETRY_HOME="/opt/poetry"
+    export VIRTUAL_ENV=/opt/venv
+    
+    mkdir -p $POETRY_HOME
+    wget --output-document ${POETRY_HOME}/get-poetry.py https://install.python-poetry.org
+    python ${POETRY_HOME}/get-poetry.py --yes
+    rm ${POETRY_HOME}/get-poetry.py
+
+    # Create virtual environment and install dependencies
+    cd /code
+    python -m venv ${VIRTUAL_ENV}
+    export PATH="${VIRTUAL_ENV}/bin:${POETRY_HOME}/bin:$PATH"
+    poetry install --no-dev
+
+
+# Executed commands once container is started
+%runscript
+    cd /code/
+    python -m segmentation.train.attention_unet.py
