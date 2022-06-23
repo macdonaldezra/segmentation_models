@@ -18,4 +18,7 @@ You can build the [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/ind
 ```bash
 # Note that Singularity will only work on Linux
 sudo singularity build train_attention.def train.def
+# To train the 
+sbatch scripts/train.sh 
 ```
+

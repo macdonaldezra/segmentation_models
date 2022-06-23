@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "segmentation"
 version = "0.1.0"
-description = "A model implementation in TensorFlow for detecting different components of ground objects"
+description = "Image segmentation models implemented using Keras"
 authors = ["ezrajames <macdonaldezra@gmail.com>"]
 
 [tool.poetry.dependencies]

@@ -1,6 +1,5 @@
 Bootstrap: docker
-From: python:3.8
-Stage: poetry
+From: nvidia/cuda:11.2.2-base
 
 
 # Environment variables that will be set during runtime
@@ -8,7 +7,8 @@ Stage: poetry
     export POETRY_HOME="/opt/poetry"
     export VIRTUAL_ENV=/opt/venv
     export PATH="${VIRTUAL_ENV}/bin:${POETRY_HOME}/bin:$PATH"
-
+    export LANG=C.UTF-8
+    export PATH="/usr/local/bin:$PATH"
 
 # Copy over files from host to container
 %files
@@ -19,6 +19,23 @@ Stage: poetry
 
 # Install Poetry and Python dependencies
 %post
+    # hacky workaround to deal with invalid GPG keys for the NVIDIA repository...
+    # solution found here: https://github.com/NVIDIA/nvidia-docker/issues/1632
+    rm /etc/apt/sources.list.d/cuda.list
+    rm /etc/apt/sources.list.d/nvidia-ml.list
+
+    apt-get update && apt-get install -yqq \
+        software-properties-common
+    add-apt-repository universe
+    apt-get update && apt-get install -yqq \
+        wget \
+        git \
+        python3.8 \
+        python3-pip \
+        python3.8-venv
+
+    echo "alias python=python3" >> ~/.bashrc && alias python=python3
+
     # Install Poetry
     GET_POETRY="https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py"
     export POETRY_HOME="/opt/poetry"
