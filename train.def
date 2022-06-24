@@ -25,14 +25,17 @@ From: nvidia/cuda:11.2.2-base
     rm /etc/apt/sources.list.d/nvidia-ml.list
 
     apt-get update && apt-get install -yqq \
-        software-properties-common
-    add-apt-repository universe
-    apt-get update && apt-get install -yqq \
-        wget \
-        git \
         python3.8 \
         python3-pip \
-        python3.8-venv
+        python3.8-venv \
+        # software-properties-common \
+        wget
+    # add-apt-repository universe
+    # apt-get update && apt-get install -yqq \
+
+    # Delete cached files we no longer need
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
 
     echo "alias python=python3" >> ~/.bashrc && alias python=python3
 
@@ -51,7 +54,6 @@ From: nvidia/cuda:11.2.2-base
     python -m venv ${VIRTUAL_ENV}
     export PATH="${VIRTUAL_ENV}/bin:${POETRY_HOME}/bin:$PATH"
     poetry install --no-dev
-
 
 # Executed commands once container is started
 %runscript

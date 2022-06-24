@@ -6,13 +6,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from segmentation.config import DATA_PATH
 from segmentation.models.attention_unet import attention_unet
-from segmentation.utils.metrics import (
-    dice_coefficient_loss,
-    dice_coeffient,
-    jaccard_index,
-)
+from segmentation.train.utils import parse_args
+from segmentation.utils.metrics import (dice_coefficient_loss, dice_coeffient,
+                                        jaccard_index)
 from sklearn.model_selection import train_test_split
 
 
@@ -108,15 +105,17 @@ def training_generator(
         yield (image, mask)
 
 
-def train_attention_unet() -> T.Dict[str, T.Any]:
+def train_attention_unet(
+    epochs: int, data_directory: Path, output_directory: Path
+) -> T.Dict[str, T.Any]:
     """
     Load training and test set and train the attention model on segmenting Brain MRI data.
     """
     set_seed()
 
     # declare filepaths for mask and training files
-    MRI_DATA_PATH = DATA_PATH / "brain_mri"
-    mask_files = list(MRI_DATA_PATH.glob("lgg-mri-segmentation/kaggle_3m/*/*_mask*"))
+    mri_directory = data_directory / "brain_mri"
+    mask_files = list(mri_directory.glob("lgg-mri-segmentation/kaggle_3m/*/*_mask*"))
     mask_files = list(map(str, mask_files))
     training_files = [path.replace("_mask", "") for path in mask_files]
 
@@ -124,7 +123,6 @@ def train_attention_unet() -> T.Dict[str, T.Any]:
     df_train, df_test = train_test_split(df, test_size=0.1)
     df_train, df_val = train_test_split(df_train, test_size=0.2)
 
-    EPOCHS = 3
     BATCH_SIZE = 32
     IMAGE_WIDTH = 256
     IMAGE_HEIGHT = 256
@@ -156,7 +154,7 @@ def train_attention_unet() -> T.Dict[str, T.Any]:
         amsgrad=False,
     )
 
-    training_path = DATA_PATH / "training"
+    training_path = output_directory / "training"
     training_path.mkdir(parents=True, exist_ok=True)
 
     callbacks = [
@@ -194,7 +192,7 @@ def train_attention_unet() -> T.Dict[str, T.Any]:
     history = model.fit(
         train_generator,
         steps_per_epoch=len(df_train) / BATCH_SIZE,
-        epochs=EPOCHS,
+        epochs=epochs,
         callbacks=callbacks,
         validation_data=test_generator,
         validation_steps=len(df_val) / BATCH_SIZE,
@@ -208,4 +206,6 @@ if __name__ == "__main__":
         print("No GPU available, not running job.")
         exit(1)
 
-    train_attention_unet()
+    args = parse_args()
+
+    # train_attention_unet(args.epochs, args.data_directory, args.output_directory)
