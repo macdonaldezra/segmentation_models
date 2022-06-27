@@ -64,8 +64,7 @@
     "python.testing.pytestArgs": ["tests"],
     "python.testing.unittestEnabled": false,
 
-    // Paths to Python & Poetry
-    "python.poetryPath": "${env:POETRY_HOME}/bin/poetry",
+    // Paths to Python
     "python.pythonPath": "${env:PYENV_ROOT}/versions/segmentation-env/bin/python",
 
     // JSON, YAML & TOML settings
