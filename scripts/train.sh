@@ -1,10 +1,16 @@
-#!/bin/sh
+#!/bin/bash
+set -eo pipefail
 
 #SBATCH --ntasks=1
 #SBATCH --gres=gpu:1
-#SBATCH --mem-per-cpu=8G
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=16G
 #SBATCH --time=0-00:10:00
 #SBATCH --output=%N-%j.out
+
+EPOCHS=2
+DATA_PATH=""
+OUTPUT_PATH=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -33,15 +39,16 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-set -eo pipefail
-
-# use latetst Singularity module on Compute Canada by running 'module spider singularity'
+# Find latetst Singularity module on Compute Canada by running 'module spider singularity'
 module load singularity/3.8
 
-# pipe output to another file
-# 
-singularity exec train_attention.image \
-    python -m segmentation.train.attention_unet --epochs $EPOCHS \
-        --data-directory /data \
-        --output-directory /output \
-         --bind $DATA_PATH:/data --bind ${OUTPUT_PATH}:/output
+# #
+# # Pipe output to another file
+# # 
+singularity exec --nv --cleanenv --pwd /code \
+  --bind $DATA_PATH:/data --bind ${OUTPUT_PATH}:/output \
+  train_attention.image \
+    python -m segmentation.train.attention_unet \
+      --epochs $EPOCHS \
+      --data-directory /data \
+      --output-directory /output | train_output.txt

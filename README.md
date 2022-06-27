@@ -17,8 +17,13 @@ You can build the [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/ind
 
 ```bash
 # Note that Singularity will only work on Linux
-sudo singularity build train_attention.def train.def
-# To train the 
-sbatch scripts/train.sh 
+sudo singularity build train.image train.def
+# To train the model
+sbatch --account=<account_name> scripts/run.sh --epochs 5 --data-directory <data_dir_path> --output-directory <output_dir_path>
+# monitor job placement in queue
+squeue -u $USER
+# Get a short summary of CPU and memory efficiency of a job
+seff <job_id>
+# Cancel a job
+scancel <job_id>
 ```
-

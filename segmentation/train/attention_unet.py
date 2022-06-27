@@ -8,8 +8,11 @@ import pandas as pd
 import tensorflow as tf
 from segmentation.models.attention_unet import attention_unet
 from segmentation.train.utils import parse_args
-from segmentation.utils.metrics import (dice_coefficient_loss, dice_coeffient,
-                                        jaccard_index)
+from segmentation.utils.metrics import (
+    dice_coefficient_loss,
+    dice_coeffient,
+    jaccard_index,
+)
 from sklearn.model_selection import train_test_split
 
 
@@ -154,7 +157,7 @@ def train_attention_unet(
         amsgrad=False,
     )
 
-    training_path = output_directory / "training"
+    training_path = output_directory
     training_path.mkdir(parents=True, exist_ok=True)
 
     callbacks = [
@@ -208,4 +211,4 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    # train_attention_unet(args.epochs, args.data_directory, args.output_directory)
+    train_attention_unet(args.epochs, args.data_directory, args.output_directory)
