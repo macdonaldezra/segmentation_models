@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Find latetst Singularity module on Compute Canada by running 'module spider singularity'
-module load singularity/3.8
+module load singularity/3.8 cuda/11.2.2 cudnn/8.2.0
 
 # #
 # # Pipe output to another file

@@ -1,9 +1,9 @@
-## Segmentation Models
+# Segmentation Models
 
 A collection of segmentation model implementations in TensorFlow.
 
+## Install
 
-### Install
 This project uses [Pyenv](https://github.com/pyenv/pyenv#installation) for managing the Python version and environment. To create the virtual environment and install dependencies run the following:  
 
 ```bash
@@ -13,6 +13,7 @@ pip install requirements.txt
 ```
 
 ### Build Singularity Container
+
 You can build the [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/index.html) container for this project which is currently configured to train an Attention UNet model to perform image segmentation on a popular brain MRI dataset by running the following command:
 
 ```bash
