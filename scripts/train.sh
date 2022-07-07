@@ -1,12 +1,13 @@
 #!/bin/bash
-set -eo pipefail
-
 #SBATCH --ntasks=1
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem-per-cpu=16G
-#SBATCH --time=0-00:10:00
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=16G
+#SBATCH --time=0-00:20:00
 #SBATCH --output=%N-%j.out
+# Note that sbatch only looks for SBATCH args in the first commented lines...
+
+set -eo pipefail
 
 EPOCHS=2
 DATA_PATH=""
@@ -40,15 +41,21 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Find latetst Singularity module on Compute Canada by running 'module spider singularity'
-module load singularity/3.8 cuda/11.2.2 cudnn/8.2.0
+module purge
+module load singularity/3.8
+module load cuda/11.2.2 cudnn/8.2.0
+
+mkdir -p /scratch/$USER/singularity/{cache,tmp}
+export SINGULARITY_CACHEDIR="/scratch/$USER/singularity/cache"
+export SINGULARITY_TMPDIR="/scratch/$USER/singularity/tmp"
 
 # #
 # # Pipe output to another file
 # # 
-singularity exec --nv --cleanenv --pwd /code \
-  --bind $DATA_PATH:/data --bind ${OUTPUT_PATH}:/output \
+singularity exec --nv --pwd /code \
+  --bind $DATA_PATH:/data --bind $OUTPUT_PATH:/output \
   train_attention.image \
     python -m segmentation.train.attention_unet \
       --epochs $EPOCHS \
       --data-directory /data \
-      --output-directory /output | train_output.txt
+      --output-directory /output

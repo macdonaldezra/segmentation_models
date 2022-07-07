@@ -1,32 +1,21 @@
 Bootstrap: docker
-From: tensorflow/tensorflow:latest-devel-gpu
+From: tensorflow/tensorflow:2.9.1-gpu
 
 
 # Environment variables that will be set during runtime
 %environment
-    export POETRY_HOME="/opt/poetry"
     export VIRTUAL_ENV=/opt/venv
-    export PATH="${VIRTUAL_ENV}/bin:${POETRY_HOME}/bin:$PATH"
+    export PATH="${VIRTUAL_ENV}/bin:/usr/local/bin:$PATH"
     export LANG=C.UTF-8
-    export PATH="/usr/local/bin:$PATH"
 
 # Copy over files from host to container
 %files
-    # poetry.lock /code/
-    # pyproject.toml /code/
     segmentation /code/
     requirements.txt /code/
 
 
 # Install Poetry and Python dependencies
 %post
-    apt-get update && apt-get install -yqq \
-        libnvidia-compute-470
-
-    # Delete cached files we no longer need
-    apt-get clean
-    rm -rf /var/lib/apt/lists/*
-
     echo "alias python=python3" >> ~/.bashrc && alias python=python3
 
     cd /code

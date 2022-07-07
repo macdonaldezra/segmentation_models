@@ -7,7 +7,7 @@ A collection of segmentation model implementations in TensorFlow.
 This project uses [Pyenv](https://github.com/pyenv/pyenv#installation) for managing the Python version and environment. To create the virtual environment and install dependencies run the following:  
 
 ```bash
-pyenv virtualenv 3.8.5 segmentation-env
+pyenv virtualenv 3.9.1 segmentation-env
 pyenv activate segmentation-env
 pip install requirements.txt
 ```
